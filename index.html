@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wide Transport - Reliable Intermodal Drayage</title>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;500;600&family=Barlow+Condensed:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --navy: #0D1B2A;
+            --navy-mid: #122133;
+            --navy-lt: #1A2E45;
+            --rust: #C84B1F;
+            --rust-lt: #E05A28;
+            --steel: #4A6FA5;
+            --chalk: #F2EFE9;
+            --white: #FFFFFF;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Barlow', sans-serif; color: var(--chalk); background: var(--navy); }
+        header { background: var(--navy); padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
+        .logo { display: flex; align-items: center; gap: 1rem; }
+        .logo-mark { width: 50px; height: 50px; background: var(--rust); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+        .logo-mark svg { width: 28px; height: 28px; fill: white; }
+        .logo-text { font-family: 'Barlow Condensed', sans-serif; font-size: 1.5rem; font-weight: 700; color: var(--white); }
+        nav { display: flex; gap: 2rem; }
+        nav a { color: var(--chalk); text-decoration: none; font-weight: 500; }
+        .dropdown { position: relative; }
+        .dropdown-content { display: none; position: absolute; background: var(--navy-mid); min-width: 200px; box-shadow: 0 8px 16px rgba(0,0,0,0.2); z-index: 1; }
+        .dropdown:hover .dropdown-content { display: block; }
+        .dropdown-content a { color: var(--chalk); padding: 12px 16px; text-decoration: none; display: block; }
+        .dropdown-content a:hover { background: var(--navy-lt); }
+        .hero { position: relative; height: 80vh; background: url('https://via.placeholder.com/1920x1080/0D1B2A/FFFFFF?text=Truck+Video+Background') center/cover; display: flex; align-items: center; justify-content: center; text-align: center; }
+        .hero::after { content: ''; position: absolute; inset: 0; background: rgba(0,0,0,0.5); }
+        .hero-content { position: relative; z-index: 1; max-width: 800px; }
+        .hero h1 { font-size: 3rem; font-weight: 700; color: var(--white); margin-bottom: 1rem; }
+        .hero p { font-size: 1.2rem; margin-bottom: 2rem; }
+        .quote-form { background: var(--white); padding: 2rem; border-radius: 8px; max-width: 400px; margin: 0 auto; }
+        .quote-form h3 { color: var(--navy); margin-bottom: 1rem; }
+        .quote-form input, .quote-form button { display: block; width: 100%; margin-bottom: 1rem; padding: 0.5rem; }
+        .quote-form button { background: var(--rust); color: var(--white); border: none; cursor: pointer; }
+        section { padding: 4rem 2rem; }
+        .services { background: var(--navy-mid); }
+        .services h2 { text-align: center; margin-bottom: 2rem; color: var(--white); }
+        .service-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; }
+        .service-card { background: var(--navy-lt); padding: 2rem; border-radius: 8px; text-align: center; }
+        .service-card h3 { color: var(--rust); margin-bottom: 1rem; }
+        .driver-benefits { background: var(--navy); }
+        .benefits-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; }
+        .benefit { background: var(--navy-mid); padding: 1.5rem; border-radius: 8px; }
+        .benefit h4 { color: var(--rust); }
+        .mission { background: var(--navy-lt); text-align: center; }
+        .mission h2 { color: var(--white); margin-bottom: 1rem; }
+        .mission p { max-width: 600px; margin: 0 auto; }
+        .blog { background: var(--navy-mid); }
+        .blog h2 { text-align: center; margin-bottom: 2rem; color: var(--white); }
+        .blog-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; }
+        .blog-post { background: var(--navy-lt); padding: 2rem; border-radius: 8px; }
+        .blog-post h3 { color: var(--rust); }
+        .contact { background: var(--navy); text-align: center; }
+        .contact h2 { color: var(--white); margin-bottom: 2rem; }
+        .contact-form { max-width: 600px; margin: 0 auto; }
+        .contact-form input, .contact-form textarea, .contact-form button { display: block; width: 100%; margin-bottom: 1rem; padding: 0.5rem; }
+        .contact-form button { background: var(--rust); color: var(--white); border: none; cursor: pointer; }
+        footer { background: var(--navy-mid); padding: 2rem; text-align: center; }
+        .missing { border: 2px solid red; padding: 1rem; margin: 1rem 0; background: rgba(255,0,0,0.1); }
+        .award { text-align: center; margin: 2rem 0; }
+        .award img { max-width: 200px; }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <div class="logo-mark">
+                <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="2" y="14" width="18" height="10" rx="1.5"/>
+                    <rect x="20" y="17" width="9" height="7" rx="1.5"/>
+                    <path d="M20 17 L26 17 L29 21 L29 24 L20 24 Z"/>
+                    <circle cx="7" cy="25" r="2.5" fill="rgba(0,0,0,0.4)"/>
+                    <circle cx="7" cy="25" r="1.2" fill="rgba(255,255,255,0.3)"/>
+                    <circle cx="24" cy="25" r="2.5" fill="rgba(0,0,0,0.4)"/>
+                    <circle cx="24" cy="25" r="1.2" fill="rgba(255,255,255,0.3)"/>
+                    <rect x="4" y="8" width="6" height="5" rx="1"/>
+                </svg>
+            </div>
+            <div class="logo-text">Wide Transport</div>
+        </div>
+        <nav>
+            <a href="#home">Home</a>
+            <div class="dropdown">
+                <a href="#drivers">DRIVERS ▼</a>
+                <div class="dropdown-content">
+                    <a href="#apply">Apply Now</a>
+                    <a href="#benefits">Employee Driver Benefits</a>
+                </div>
+            </div>
+            <div class="dropdown">
+                <a href="#shippers">SHIPPERS ▼</a>
+                <div class="dropdown-content">
+                    <a href="#quote">Request Freight Quote</a>
+                    <a href="#tms">TMS Login</a>
+                    <a href="#credit">Credit Application</a>
+                </div>
+            </div>
+            <div class="dropdown">
+                <a href="#agents">AGENTS ▼</a>
+                <div class="dropdown-content">
+                    <a href="#inquiry">Agent Inquiry</a>
+                </div>
+            </div>
+            <a href="#services">Services</a>
+            <a href="#about">About</a>
+            <a href="#blog">Blog</a>
+        </nav>
+    </header>
+
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <h1>Reliable Intermodal Drayage</h1>
+            <p>Safe, efficient, and specialized transportation services for your business.</p>
+            <div class="quote-form">
+                <h3>Request a Freight Quote</h3>
+                <input type="text" placeholder="Name" required>
+                <input type="email" placeholder="Email" required>
+                <input type="text" placeholder="Company">
+                <input type="text" placeholder="Phone">
+                <button type="submit">Get Quote</button>
+            </div>
+        </div>
+    </section>
+
+    <section id="services" class="services">
+        <h2>Our Services</h2>
+        <div class="service-grid">
+            <div class="service-card">
+                <h3>Intermodal Shipping</h3>
+                <p>Efficient container movement between rail, port, and destinations.</p>
+            </div>
+            <div class="service-card">
+                <h3>Drayage</h3>
+                <p>Transportation for cargo of any size or shape.</p>
+            </div>
+            <div class="service-card">
+                <h3>Hazardous/Overweight</h3>
+                <p>Specialized handling for hazmat and heavy loads.</p>
+            </div>
+            <div class="service-card">
+                <h3>Storage & Transloading</h3>
+                <p>Secure container storage and transloading services.</p>
+            </div>
+            <div class="service-card">
+                <h3>Lifts & Crane Services</h3>
+                <p>Heavy lift and rigging for oversized cargo.</p>
+            </div>
+            <div class="service-card">
+                <h3>Tri-Axle Fleet</h3>
+                <p>High-quality chassis for ocean containers.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="benefits" class="driver-benefits">
+        <h2>Driver Benefits</h2>
+        <div class="benefits-grid">
+            <div class="benefit">
+                <h4>Competitive Pay</h4>
+                <p>Hourly pay, overtime, direct deposit.</p>
+            </div>
+            <div class="benefit">
+                <h4>Local Moves</h4>
+                <p>Home every day, no long hauls.</p>
+            </div>
+            <div class="benefit">
+                <h4>No Forced Dispatch</h4>
+                <p>Choose your own loads.</p>
+            </div>
+            <div class="benefit">
+                <h4>Hazmat Pay</h4>
+                <p>Additional pay for endorsements.</p>
+            </div>
+            <div class="benefit">
+                <h4>Paid Detention</h4>
+                <p>Compensation for wait times.</p>
+            </div>
+            <div class="benefit">
+                <h4>Benefits Package</h4>
+                <p>Health insurance, 401K, PTO.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="mission" class="mission">
+        <h2>Our Mission</h2>
+        <p>We pledge to prioritize the well-being of our drivers, ensuring work-life balance, mental health support, and professional development. Safety is our top priority, and we commit to continuous investment in technology for better service.</p>
+    </section>
+
+    <div class="missing">
+        <h3>TMS Shipper Login Portal</h3>
+        <p>Access real-time shipment tracking and manage your account.</p>
+        <form style="max-width: 400px; margin: 0 auto;">
+            <input type="text" placeholder="Username" required>
+            <input type="password" placeholder="Password" required>
+            <button type="submit">Login</button>
+        </form>
+        <p><a href="#">Forgot Password?</a></p>
+    </div>
+
+    <div class="missing">
+        <h3>Downloadable Credit Application</h3>
+        <p>Start the credit onboarding process by downloading our application form.</p>
+        <a href="https://via.placeholder.com/credit-app.pdf" download="WideTransport_CreditApplication.pdf" style="display: inline-block; background: var(--rust); color: var(--white); padding: 0.5rem 1rem; text-decoration: none; border-radius: 4px;">Download PDF</a>
+    </div>
+
+    <div class="missing">
+        <h3>Agent / Vendor Inquiry</h3>
+        <p>Interested in partnering with us? Submit your inquiry below.</p>
+        <form style="max-width: 400px; margin: 0 auto;">
+            <input type="text" placeholder="Name" required>
+            <input type="email" placeholder="Email" required>
+            <input type="text" placeholder="Company">
+            <input type="text" placeholder="Phone">
+            <textarea placeholder="Message" rows="4"></textarea>
+            <button type="submit">Submit Inquiry</button>
+        </form>
+    </div>
+
+    <div class="missing">
+        <h3>Online Driver Application</h3>
+        <p>Join our team as a professional driver. Apply online today.</p>
+        <form style="max-width: 400px; margin: 0 auto;">
+            <input type="text" placeholder="Full Name" required>
+            <input type="email" placeholder="Email" required>
+            <input type="text" placeholder="Phone" required>
+            <input type="text" placeholder="CDL Number">
+            <select>
+                <option>Company Driver</option>
+                <option>Owner Operator</option>
+            </select>
+            <textarea placeholder="Experience" rows="3"></textarea>
+            <button type="submit">Submit Application</button>
+        </form>
+    </div>
+
+    <div class="missing">
+        <h3>Our Mission & Values</h3>
+        <p><strong>Pledge to the Driver:</strong> Our mission opens with a full pledge to truck drivers — prioritizing their well-being, mental health, work-life balance, and professional development. This is not boilerplate; it's a genuine brand differentiator that drivers talk about and share.</p>
+        <p><strong>Safety as a Selling Point:</strong> Our safety rating is one of the best in the industry, and we use it actively in shipper conversations. A clean FMCSA CSA score opens the door to Fortune 500 preferred carrier lists — carriers with poor scores get blacklisted immediately.</p>
+        <p><strong>Technology Innovation:</strong> We commit to continuously investing in EDI integration, route optimization, and real-time data. For enterprise shippers, knowing their carrier is tech-forward means less manual work on their end — which is a real purchasing decision driver.</p>
+        <p><strong>Community and Advocacy:</strong> We publicly advocate for driver respect and recognition, host driver meetings, run Driver Appreciation Week, and foster a family atmosphere. Drivers who feel respected don't leave — and they recruit others. This is how you grow a fleet organically.</p>
+    </div>
+
+    <div class="missing">
+        <h3>Active Blog / Articles Section</h3>
+        <p>We publish industry content to signal activity and improve SEO.</p>
+        <div class="blog-grid" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));">
+            <div class="blog-post">
+                <h4>Intermodal Trends 2026</h4>
+                <p>How technology is reshaping drayage operations.</p>
+                <a href="#">Read More</a>
+            </div>
+            <div class="blog-post">
+                <h4>Driver Retention Strategies</h4>
+                <p>Why local moves and no forced dispatch matter.</p>
+                <a href="#">Read More</a>
+            </div>
+            <div class="blog-post">
+                <h4>Safety Innovations</h4>
+                <p>New tools for better road safety.</p>
+                <a href="#">Read More</a>
+            </div>
+            <div class="blog-post">
+                <h4>Environmental Commitment</h4>
+                <p>Our efforts to reduce emissions.</p>
+                <a href="#">Read More</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="missing">
+        <p><strong>Missing Feature:</strong> Award / Social Proof Displayed.</p>
+        <div class="award">
+            <img src="https://via.placeholder.com/200x100/FFFFFF/000000?text=Award+Placeholder" alt="Award">
+            <p>2025 Carrier of the Year</p>
+        </div>
+    </div>
+
+    <section id="blog" class="blog">
+        <h2>Latest Articles</h2>
+        <div class="blog-grid">
+            <div class="blog-post">
+                <h3>Industry Trends</h3>
+                <p>Latest updates in intermodal shipping.</p>
+            </div>
+            <div class="blog-post">
+                <h3>Driver Spotlight</h3>
+                <p>Stories from our drivers.</p>
+            </div>
+            <div class="blog-post">
+                <h3>Safety First</h3>
+                <p>Our commitment to safety.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="contact" class="contact">
+        <h2>Contact Us</h2>
+        <div class="contact-form">
+            <input type="text" placeholder="Name" required>
+            <input type="email" placeholder="Email" required>
+            <input type="text" placeholder="Subject">
+            <textarea placeholder="Message" rows="5"></textarea>
+            <button type="submit">Send Message</button>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2023 Wide Transport Inc. All rights reserved.</p>
+        <p>South Holland, IL</p>
+    </footer>
+</body>
+</html>

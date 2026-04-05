@@ -1,0 +1,15 @@
+{
+  "name": "website-screenshot",
+  "version": "1.0.0",
+  "description": "A simple project to take screenshots using Puppeteer",
+  "main": "screenshot.js",
+  "scripts": {
+    "start": "node screenshot.js"
+  },
+  "keywords": ["puppeteer", "screenshot"],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "puppeteer": "^21.0.0"
+  }
+}

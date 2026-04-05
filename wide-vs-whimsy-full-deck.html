@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wide Transport — Full Growth Blueprint</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #0a0a0a;
+    color: #f5f5f7;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+    height: 100vh;
+    overflow: hidden;
+    cursor: none;
+  }
+  body.cursor-visible { cursor: default; }
+
+  .deck { width: 100%; height: 100vh; position: relative; }
+
+  .slide {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 48px 72px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.45s ease;
+    overflow: hidden;
+  }
+  .slide.active { opacity: 1; pointer-events: all; }
+
+  /* TYPOGRAPHY */
+  .eyebrow {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #DA7756;
+    margin-bottom: 14px;
+    text-align: center;
+  }
+  h1 {
+    font-size: clamp(34px, 4.8vw, 60px);
+    font-weight: 700;
+    color: #fff;
+    text-align: center;
+    line-height: 1.1;
+    margin-bottom: 18px;
+  }
+  h2 {
+    font-size: clamp(26px, 3.2vw, 44px);
+    font-weight: 700;
+    color: #fff;
+    text-align: center;
+    line-height: 1.15;
+    margin-bottom: 14px;
+  }
+  .sub {
+    font-size: clamp(13px, 1.4vw, 16px);
+    color: #86868b;
+    text-align: center;
+    max-width: 680px;
+    line-height: 1.65;
+    margin-bottom: 4px;
+  }
+  strong, .accent { color: #DA7756; }
+
+  /* SECTION BADGE */
+  .section-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(218,119,86,0.1);
+    border: 1px solid rgba(218,119,86,0.28);
+    border-radius: 100px;
+    padding: 6px 16px;
+    margin-bottom: 22px;
+  }
+  .section-badge span { font-size: 12px; font-weight: 600; color: #DA7756; }
+
+  /* CARDS */
+  .card {
+    background: rgba(255,255,255,0.04);
+    border-radius: 18px;
+    padding: 22px 20px;
+    border: 1px solid rgba(255,255,255,0.07);
+  }
+  .card.accent-border { border-color: rgba(218,119,86,0.35); background: rgba(218,119,86,0.05); }
+  .card .c-icon { font-size: 26px; margin-bottom: 10px; }
+  .card .c-title { font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 6px; }
+  .card .c-body { font-size: 12.5px; color: #86868b; line-height: 1.6; }
+  .card .c-tag { font-size: 11px; font-weight: 700; color: #DA7756; margin-top: 10px; letter-spacing: 0.04em; }
+
+  /* GRIDS */
+  .g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; width: 100%; max-width: 860px; margin-top: 20px; }
+  .g3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; width: 100%; max-width: 880px; margin-top: 20px; }
+  .g4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 12px; width: 100%; max-width: 900px; margin-top: 20px; }
+
+  /* COMPARE */
+  .compare { display: grid; grid-template-columns: 1fr 60px 1fr; gap: 0; width: 100%; max-width: 900px; margin-top: 20px; align-items: start; }
+  .compare-col { background: rgba(255,255,255,0.04); border-radius: 18px; padding: 22px 20px; border: 1px solid rgba(255,255,255,0.07); }
+  .compare-col.hot { border-color: rgba(218,119,86,0.35); background: rgba(218,119,86,0.05); }
+  .compare-col .ch { font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 10px; color: #555; }
+  .compare-col.hot .ch { color: #DA7756; }
+  .compare-col .ct { font-size: 17px; font-weight: 700; color: #fff; margin-bottom: 14px; }
+  .compare-divider { display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 800; color: #3a3a3c; letter-spacing: 0.1em; padding-top: 60px; }
+  .cr { display: flex; align-items: flex-start; gap: 9px; margin-bottom: 10px; font-size: 12.5px; color: #c7c7cc; line-height: 1.5; }
+  .cr .ci { font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+
+  /* STATS */
+  .stats { display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; margin-top: 22px; }
+  .stat { background: rgba(255,255,255,0.04); border-radius: 18px; padding: 24px 28px; text-align: center; border: 1px solid rgba(255,255,255,0.07); min-width: 140px; }
+  .stat.hot { border-color: rgba(218,119,86,0.35); background: rgba(218,119,86,0.06); }
+  .stat-n { font-size: clamp(28px, 3.5vw, 46px); font-weight: 700; color: #fff; line-height: 1; }
+  .stat.hot .stat-n { color: #DA7756; }
+  .stat-l { font-size: 11px; color: #86868b; margin-top: 6px; text-transform: uppercase; letter-spacing: 0.06em; }
+
+  /* CALLOUT */
+  .callout {
+    background: rgba(218,119,86,0.07);
+    border: 1px solid rgba(218,119,86,0.22);
+    border-radius: 14px;
+    padding: 16px 24px;
+    margin-top: 18px;
+    max-width: 700px;
+    text-align: center;
+  }
+  .callout p { font-size: 14px; color: #d1d1d6; line-height: 1.65; }
+
+  /* BULLET LIST */
+  .blist { width: 100%; max-width: 760px; margin-top: 18px; }
+  .brow {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 12px 16px; border-radius: 12px; margin-bottom: 7px;
+    background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05);
+  }
+  .brow .bi { font-size: 17px; flex-shrink: 0; margin-top: 1px; }
+  .brow .bt { font-size: 13.5px; color: #d1d1d6; line-height: 1.55; }
+  .brow .bt b { color: #fff; }
+
+  /* FLOW */
+  .flow { display: flex; align-items: flex-start; gap: 0; margin-top: 22px; width: 100%; max-width: 900px; flex-wrap: nowrap; justify-content: center; }
+  .fstep { background: rgba(255,255,255,0.04); border-radius: 15px; padding: 16px 14px; text-align: center; border: 1px solid rgba(255,255,255,0.07); flex: 1; max-width: 160px; }
+  .fstep .fn { font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: #DA7756; margin-bottom: 5px; }
+  .fstep .ft { font-size: 13px; font-weight: 700; color: #fff; margin-bottom: 4px; }
+  .fstep .fb { font-size: 11px; color: #86868b; line-height: 1.4; }
+  .fstep .fc { font-size: 10px; color: #DA7756; font-weight: 700; margin-top: 7px; }
+  .farrow { font-size: 16px; color: #3a3a3c; display: flex; align-items: center; padding: 0 4px; flex-shrink: 0; margin-top: 30px; }
+
+  /* PILL ROW */
+  .pill-row { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 18px; max-width: 700px; }
+  .pill { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 100px; padding: 8px 18px; font-size: 13px; color: #d1d1d6; font-weight: 500; }
+  .pill.ap { background: rgba(218,119,86,0.1); border-color: rgba(218,119,86,0.3); color: #DA7756; font-weight: 700; }
+
+  /* PROGRESS DOTS */
+  .dots { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); display: flex; gap: 7px; z-index: 100; }
+  .dot { width: 5px; height: 5px; border-radius: 50%; background: rgba(255,255,255,0.18); transition: all 0.3s ease; cursor: pointer; }
+  .dot.active { background: #DA7756; width: 18px; border-radius: 3px; }
+
+  /* SLIDE COUNTER */
+  .slide-num { position: fixed; top: 20px; right: 28px; font-size: 10px; color: #3a3a3c; font-weight: 600; letter-spacing: 0.1em; z-index: 100; }
+
+  /* SECTION DIVIDER SLIDE */
+  .divider-slide { background: radial-gradient(ellipse at center, rgba(218,119,86,0.1) 0%, transparent 70%); }
+
+  /* WIDE TABLE */
+  .wtable { width: 100%; max-width: 820px; margin-top: 18px; border-collapse: separate; border-spacing: 0; }
+  .wtable th { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: #86868b; padding: 10px 14px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.07); }
+  .wtable th:nth-child(2) { color: #DA7756; }
+  .wtable td { font-size: 12.5px; color: #d1d1d6; padding: 11px 14px; border-bottom: 1px solid rgba(255,255,255,0.04); line-height: 1.5; vertical-align: top; }
+  .wtable tr:last-child td { border-bottom: none; }
+  .wtable td:first-child { color: #fff; font-weight: 600; }
+  .yes { color: #30d158; }
+  .no { color: #ff453a; }
+
+  /* TIMELINE */
+  .timeline { width: 100%; max-width: 820px; margin-top: 18px; }
+  .trow { display: flex; gap: 16px; margin-bottom: 10px; align-items: flex-start; }
+  .tphase { background: #DA7756; color: #fff; font-size: 9px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; padding: 5px 12px; border-radius: 100px; white-space: nowrap; margin-top: 2px; flex-shrink: 0; min-width: 90px; text-align: center; }
+  .tcontent { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07); border-radius: 12px; padding: 12px 16px; flex: 1; }
+  .tcontent .tt { font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 4px; }
+  .tcontent .tb { font-size: 12px; color: #86868b; line-height: 1.55; }
+  .tcontent .tc { font-size: 11px; color: #DA7756; font-weight: 700; margin-top: 6px; }
+</style>
+</head>
+<body>
+<div class="deck" id="deck">
+
+  <!-- SLIDE 1: TITLE -->
+  <div class="slide active">
+    <div class="section-badge"><span>Wide Transport — Full Growth Blueprint</span></div>
+    <h1>Whimsy Intermodal vs.<br><strong>Wide Transport</strong></h1>
+    <p class="sub">A deep-dive into who Whimsy is, how they built their business, where Wide Transport stands today, and the exact roadmap to compete, grow, and win more drivers and vendors in the Chicago intermodal market</p>
+    <div class="pill-row">
+      <div class="pill">22 Slides</div>
+      <div class="pill">Website Analysis</div>
+      <div class="pill">Driver Growth</div>
+      <div class="pill">Vendor Strategy</div>
+      <div class="pill">Revenue Roadmap</div>
+    </div>
+  </div>
+
+  <!-- SLIDE 2: WHO IS WHIMSY -->
+  <div class="slide">
+    <div class="eyebrow">Section 1 — Know Your Competitor</div>
+    <h2>Who Is <strong>Whimsy Intermodal</strong>?</h2>
+    <div class="g3">
+      <div class="card">
+        <div class="c-icon">📍</div>
+        <div class="c-title">Based in Mt. Prospect, IL</div>
+        <div class="c-body">Headquartered in the northwest Chicago suburbs with a second location in Kansas City, MO. Their yards are positioned within 10 miles of every major Midwest rail exchange point — BNSF, CN, UP, CSX.</div>
+      </div>
+      <div class="card">
+        <div class="c-icon">🚛</div>
+        <div class="c-title">~80 Drivers, Two Markets</div>
+        <div class="c-body">Operates roughly 80 drivers across Chicago and Kansas City. Employee company drivers and owner-operators both. Fleet covers import and export containers for domestic and international clients globally.</div>
+      </div>
+      <div class="card">
+        <div class="c-icon">🏆</div>
+        <div class="c-title">2025 C.H. Robinson Carrier of the Year</div>
+        <div class="c-body">Named C.H. Robinson's 2025 Carrier of the Year — one of the most prestigious recognitions a mid-size drayage carrier can receive. It signals elite service consistency across thousands of loads annually.</div>
+      </div>
+      <div class="card">
+        <div class="c-icon">⚙️</div>
+        <div class="c-title">Technology-Forward</div>
+        <div class="c-body">Invested in EDI integration and real-time visibility so shippers can track containers automatically. This is enterprise-level infrastructure running inside a mid-size carrier, which is rare and valuable.</div>
+      </div>
+      <div class="card">
+        <div class="c-icon">☣️</div>
+        <div class="c-title">Hazmat + Heavy Specialization</div>
+        <div class="c-body">Most drivers hold hazmat endorsements. They built a tri-axle fleet specifically for overweight containers. These two niches command rate premiums and attract clients that competitors can't serve.</div>
+      </div>
+      <div class="card">
+        <div class="c-icon">🌱</div>
+        <div class="c-title">Environmental Commitment</div>
+        <div class="c-body">Maintains a published environmental page and is actively reducing fleet emissions. For shippers that track sustainability metrics in their supply chain, this is increasingly a selection criteria.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 3: WHIMSY SERVICES DEEP DIVE -->
+  <div class="slide">
+    <div class="eyebrow">Whimsy's Full Service Portfolio</div>
+    <h2>Everything <strong>Whimsy Offers</strong> — And Why It Matters</h2>
+    <table class="wtable">
+      <tr>
+        <th>Service</th>
+        <th>What They Do</th>
+        <th>Why It's a Revenue Driver</th>
+      </tr>
+      <tr>
+        <td>Intermodal Shipping</td>
+        <td>Moves containers seamlessly between rail, port, and final destinations using supply chain analytics</td>
+        <td>Core business — bread and butter volume from 3PLs and importers/exporters</td>
+      </tr>
+      <tr>
+        <td>Drayage</td>
+        <td>Any size or shape cargo, storage and transport services, efficient solutions regardless of specs</td>
+        <td>High-frequency repeat business from freight forwarders and shippers</td>
+      </tr>
+      <tr>
+        <td>Hazmat / Overweight</td>
+        <td>Fully trained heavy haul and hazmat team, meets/exceeds industry standards on every shipment</td>
+        <td>20–35% rate premium over standard loads, very few competitors can serve this</td>
+      </tr>
+      <tr>
+        <td>Storage & Transloading</td>
+        <td>Short and long-term container storage across multiple secured, video-monitored Chicagoland and KC yards</td>
+        <td>Passive revenue stream — shippers pay per day, locks in ongoing relationship</td>
+      </tr>
+      <tr>
+        <td>Lifts & Crane Services</td>
+        <td>Oversized and over-dimensional cargo, heavy lift and engineered rigging plans via crane network</td>
+        <td>Rare specialty that virtually no mid-size carrier offers — very high margin</td>
+      </tr>
+      <tr>
+        <td>Tri-Axle Fleet</td>
+        <td>High-quality chassis specifically designed for ocean line containers, includes ultra-lights</td>
+        <td>Overweight containers are a growing volume category — premium rates, locked-in clients</td>
+      </tr>
+      <tr>
+        <td>Truck & Trailer Parking</td>
+        <td>Yard space for truck and trailer storage — newest service offering added to the portfolio</td>
+        <td>Recurring daily/weekly revenue, attracts owner-operators and fleet operators</td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- SLIDE 4: WHIMSY MISSION & VALUES -->
+  <div class="slide">
+    <div class="eyebrow">Whimsy's Foundation</div>
+    <h2>The <strong>Mission & Values</strong> That Built Their Reputation</h2>
+    <p class="sub">Whimsy built their brand explicitly around the driver — not just the shipper. This dual focus is what separates them from most competitors.</p>
+    <div class="g2">
+      <div class="card">
+        <div class="c-icon">🙏</div>
+        <div class="c-title">Pledge to the Driver</div>
+        <div class="c-body">Their mission page opens with a full pledge to truck drivers — prioritizing their well-being, mental health, work-life balance, and professional development. This is not boilerplate. It's a genuine brand differentiator that drivers talk about and share.</div>
+      </div>
+      <div class="card">
+        <div class="c-icon">🔒</div>
+        <div class="c-title">Safety as a Selling Point</div>
+        <div class="c-body">Whimsy's safety rating is one of the best in the industry by their own claim, and they use it actively in shipper conversations. A clean FMCSA CSA score opens the door to Fortune 500 preferred carrier lists — carriers with poor scores get blacklisted immediately.</div>
+      </div>
+      <div class="card">
+        <div class="c-icon">💡</div>
+        <div class="c-title">Technology Innovation Pledge</div>
+        <div class="c-body">They commit to continuously investing in EDI integration, route optimization, and real-time data. For enterprise shippers, knowing their carrier is tech-forward means less manual work on their end — which is a real purchasing decision driver.</div>
+      </div>
+      <div class="card">
+        <div class="c-icon">🤝</div>
+        <div class="c-title">Community and Advocacy</div>
+        <div class="c-body">They publicly advocate for driver respect and recognition, host driver meetings, run Driver Appreciation Week, and foster a family atmosphere. Drivers who feel respected don't leave — and they recruit others. This is how you grow a fleet organically.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 5: WHIMSY DRIVER BENEFITS DETAIL -->
+  <div class="slide">
+    <div class="eyebrow">Whimsy Driver Program</div>
+    <h2>Why <strong>Drivers Choose Whimsy</strong> — In Detail</h2>
+    <div class="compare">
+      <div class="compare-col">
+        <div class="ch">Company Drivers</div>
+        <div class="ct">Full Employee Package</div>
+        <div class="cr"><span class="ci">💰</span> Competitive hourly pay, overtime after 50 hours, direct deposit, paid weekly</div>
+        <div class="cr"><span class="ci">🏥</span> Health, dental & vision insurance — company covers 60% of premium</div>
+        <div class="cr"><span class="ci">🛡️</span> Life insurance and short-term disability included</div>
+        <div class="cr"><span class="ci">🏦</span> 401(K) retirement plan</div>
+        <div class="cr"><span class="ci">🏖️</span> Paid PTO and all federal holidays</div>
+        <div class="cr"><span class="ci">⭐</span> Yearly performance bonus + Driver Appreciation Week safety bonus</div>
+        <div class="cr"><span class="ci">☣️</span> Additional pay for hazmat endorsement</div>
+        <div class="cr"><span class="ci">⏱️</span> Paid detention time</div>
+      </div>
+      <div class="compare-divider">vs</div>
+      <div class="compare-col hot">
+        <div class="ch">Owner Operators</div>
+        <div class="ct">Independent Contractor Package</div>
+        <div class="cr"><span class="ci">💰</span> Competitive rates — 100% fuel surcharge passed through</div>
+        <div class="cr"><span class="ci">💳</span> Parking discounts, pre-pass discounts, truck wash discounts</div>
+        <div class="cr"><span class="ci">📅</span> Direct deposit, paid weekly</div>
+        <div class="cr"><span class="ci">⭐</span> Yearly performance bonus + safety bonus</div>
+        <div class="cr"><span class="ci">🚫</span> No forced dispatch — driver chooses their loads</div>
+        <div class="cr"><span class="ci">🏠</span> Local moves only — home every day</div>
+        <div class="cr"><span class="ci">☣️</span> Additional pay for hazmat endorsement</div>
+        <div class="cr"><span class="ci">⏱️</span> Paid detention time</div>
+      </div>
+    </div>
+    <div class="callout"><p>The <strong>"no forced dispatch"</strong> and <strong>"local moves / home daily"</strong> are the two biggest driver magnets in intermodal. Whimsy lists both prominently. Wide should too.</p></div>
+  </div>
+
+  <!-- SLIDE 6: WHIMSY WEBSITE ANATOMY -->
+  <div class="slide">
+    <div class="eyebrow">Whimsy Website — Page by Page</div>
+    <h2>How <strong>whimsyintermodal.com</strong> Is Built to Convert</h2>
+    <div class="blist">
+      <div class="brow"><span class="bi">🧭</span><div class="bt"><b>Navigation: Two audiences, zero confusion.</b> Every page has a DRIVERS dropdown (benefits + apply now) and a SHIPPERS dropdown (quote form + TMS login + credit application). A visitor knows in 2 seconds where to go.</div></div>
+      <div class="brow"><span class="bi">🎬</span><div class="bt"><b>Homepage hero: Video background + instant freight quote form.</b> No static image. A live video of trucks moving plays behind the headline. The quote form is embedded right there — no clicks required to start a quote.</div></div>
+      <div class="brow"><span class="bi">🗂️</span><div class="bt"><b>7 individual service pages, each with its own URL.</b> Intermodal, Drayage, Hazmat/Overweight, Storage, Lifts, Tri-Axles, Parking. Each is a standalone SEO page that ranks for specific search terms independently.</div></div>
+      <div class="brow"><span class="bi">🔐</span><div class="bt"><b>TMS Customer Login in the top nav.</b> Shippers can log in and check shipment status directly. This creates daily touchpoints and makes switching carriers a painful IT decision instead of a phone call.</div></div>
+      <div class="brow"><span class="bi">📄</span><div class="bt"><b>Downloadable Credit Application PDF.</b> Shippers can start the credit onboarding process without calling anyone. This signals operational maturity and removes friction from new account setup.</div></div>
+      <div class="brow"><span class="bi">🏆</span><div class="bt"><b>Award displayed on every page footer.</b> The C.H. Robinson 2025 Carrier of the Year award badge appears in the footer sitewide. Social proof on every page — not buried on an about page nobody visits.</div></div>
+      <div class="brow"><span class="bi">📰</span><div class="bt"><b>Active articles / blog section.</b> They publish industry content which signals to Google that the site is active, improving SEO rankings over time for every page on the domain.</div></div>
+    </div>
+  </div>
+
+  <!-- SLIDE 7: WHIMSY VS WIDE — WEBSITE SIDE BY SIDE -->
+  <div class="slide">
+    <div class="eyebrow">Direct Website Comparison</div>
+    <h2><strong>whimsyintermodal.com</strong> vs. <strong>widetransport.us</strong></h2>
+    <table class="wtable" style="margin-top:18px">
+      <tr>
+        <th>Feature</th>
+        <th>Whimsy Intermodal</th>
+        <th>Wide Transport</th>
+      </tr>
+      <tr><td>Separate Driver Entry Point</td><td class="yes">✅ Full DRIVERS dropdown</td><td class="no">❌ Not present</td></tr>
+      <tr><td>Separate Shipper Entry Point</td><td class="yes">✅ Full SHIPPERS dropdown</td><td class="no">❌ Not present</td></tr>
+      <tr><td>Live Freight Quote Form (homepage)</td><td class="yes">✅ Embedded on hero</td><td class="no">❌ Not present</td></tr>
+      <tr><td>TMS / Shipper Login Portal</td><td class="yes">✅ Live in nav</td><td class="no">❌ Not present</td></tr>
+      <tr><td>Downloadable Credit Application</td><td class="yes">✅ PDF available</td><td class="no">❌ Not present</td></tr>
+      <tr><td>Individual SEO Service Pages</td><td class="yes">✅ 7 dedicated pages</td><td class="no">❌ Services listed on 1 page</td></tr>
+      <tr><td>Driver Benefits Page (with detail)</td><td class="yes">✅ Full breakdown, hourly pay, 401K, etc.</td><td class="no">❌ Not present</td></tr>
+      <tr><td>Online Driver Application</td><td class="yes">✅ Direct CDL application link</td><td class="no">❌ Not present</td></tr>
+      <tr><td>Published Mission & Values</td><td class="yes">✅ Full pledge to drivers</td><td class="no">❌ Not present</td></tr>
+      <tr><td>Agent / Vendor Inquiry Page</td><td class="yes">✅ Agent Inquiry form</td><td class="no">❌ Not present</td></tr>
+      <tr><td>Blog / Articles Section</td><td class="yes">✅ Active content published</td><td class="no">❌ Not present</td></tr>
+      <tr><td>Award / Social Proof Displayed</td><td class="yes">✅ 2025 Carrier of the Year in footer</td><td class="no">❌ Not present</td></tr>
+    </table>
+  </div>
+
+  <!-- SLIDE 8: THE OPPORTUNITY GAP -->
+  <div class="slide divider-slide">
+    <div class="eyebrow">Section 2 — The Opportunity</div>
+    <h1>Wide Transport Has a<br><strong>Real Opening</strong></h1>
+    <p class="sub">Whimsy is based in Mount Prospect — northwest suburbs. Wide Transport is in South Holland — south suburbs. These are two completely different service corridors in the Chicago metro. The rail ramps Wide is closest to (CSX Bedford Park, BNSF Corwith, UP Global 4 via I-94/I-57) are underserved by well-branded carriers.</p>
+    <div class="stats">
+      <div class="stat"><div class="stat-n">~25</div><div class="stat-l">Wide Transport Drivers (est.)</div></div>
+      <div class="stat"><div class="stat-n">~80</div><div class="stat-l">Whimsy Drivers</div></div>
+      <div class="stat hot"><div class="stat-n">300mi</div><div class="stat-l">Wide's Service Radius</div></div>
+      <div class="stat"><div class="stat-n">$0</div><div class="stat-l">Cost to Fix the Website Gaps</div></div>
+    </div>
+    <div class="callout"><p>The South Holland / Southland corridor is <strong>one of the most active drayage zones in the country</strong> given its proximity to the Union Pacific and CSX rail yards. Wide sits in the middle of it with room to dominate — but only if shippers and drivers can find them.</p></div>
+  </div>
+
+  <!-- SLIDE 9: WEBSITE REBUILD PLAN -->
+  <div class="slide">
+    <div class="eyebrow">Section 3 — Website Rebuild</div>
+    <h2>What Wide's <strong>New Website</strong> Needs to Look Like</h2>
+    <div class="g3">
+      <div class="card">
+        <div class="c-icon">🏠</div>
+        <div class="c-title">Homepage Hero</div>
+        <div class="c-body">Video or high-quality truck photo background. Headline that states the service area and specialty clearly. Two CTA buttons side-by-side: "Get a Freight Quote" and "Drive for Us." No buried navigation — this is the first thing anyone sees.</div>
+        <div class="c-tag">Cost: $0 if existing video, $200–500 for professional photo</div>
+      </div>
+      <div class="card">
+        <div class="c-icon">🧭</div>
+        <div class="c-title">Navigation Redesign</div>
+        <div class="c-body">Top nav should have: DRIVERS dropdown, SHIPPERS dropdown, SERVICES dropdown, ABOUT, and CONTACT. Three persistent action buttons pinned to top right (Drive for Us / Get a Quote / Customer Login). This structure works on mobile too.</div>
+        <div class="c-tag">Cost: included in site redesign</div>
+      </div>
+      <div class="card">
+        <div class="c-icon">📋</div>
+        <div class="c-title">Driver Recruiting Page</div>
+        <div class="c-body">Separate page with: specific pay details, home time policy, 401K and health coverage info, no-forced-dispatch policy, hazmat pay premium, referral bonus dollar amount, and a direct CDL application link. Drivers should be able to self-qualify and apply in under 5 minutes.</div>
+        <div class="c-tag">Cost: $300–800 to build</div>
+      </div>
+      <div class="card">
+        <div class="c-icon">💬</div>
+        <div class="c-title">Freight Quote Form</div>
+        <div class="c-body">Embedded on the homepage — not a contact page. Fields: shipping from, shipping to, container type, weight, date needed. Routes directly to dispatch or sales inbox with an auto-reply to the shipper. This is the single highest-ROI addition to the site.</div>
+        <div class="c-tag">Cost: $200–600 to build</div>
+      </div>
+      <div class="card">
+        <div class="c-icon">🗂️</div>
+        <div class="c-title">Individual Service Pages</div>
+        <div class="c-body">One page per service: Intermodal Drayage, Container Storage, Overweight/Hazmat, Transloading. Each page targets a specific keyword that shippers search for. This alone can drive inbound leads from Google with zero ad spend once the pages are indexed.</div>
+        <div class="c-tag">Cost: $500–1,500 to build</div>
+      </div>
+      <div class="card">
+        <div class="c-icon">📄</div>
+        <div class="c-title">Shipper Onboarding Tools</div>
+        <div class="c-body">Downloadable credit application PDF, a shipper FAQ page, and eventually a TMS customer login. The credit application alone signals to enterprise shippers that Wide runs a professional operation. This is the first thing a new shipper asks for after rates.</div>
+        <div class="c-tag">Cost: $50–200 for PDF, $1K–3K for TMS portal</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 10: SEO & DIGITAL PRESENCE -->
+  <div class="slide">
+    <div class="eyebrow">Section 4 — Getting Found Online</div>
+    <h2>The <strong>SEO & Visibility</strong> Playbook</h2>
+    <p class="sub">Wide Transport is essentially invisible in local search right now. The search terms shippers type when they need a South Holland drayage carrier are completely unclaimed.</p>
+    <div class="g2">
+      <div class="card">
+        <div class="c-icon">📍</div>
+        <div class="c-title">Google Business Profile</div>
+        <div class="c-body">A fully built-out Google Business Profile with the correct category (Trucking Company / Freight Transportation), service area, photos of the fleet, and regular post updates. This is how local shippers find carriers. Most competitors in South Holland have either no GBP or an empty one.</div>
+        <div class="c-tag">Cost: Free. Setup time: 2–3 hours</div>
+      </div>
+      <div class="card">
+        <div class="c-icon">🔍</div>
+        <div class="c-title">Target These Exact Keywords</div>
+        <div class="c-body">Pages built specifically for: "intermodal drayage South Holland IL," "container drayage Chicago south suburbs," "drayage company CSX Bedford Park," "intermodal trucking I-57 Chicago." Zero competition on most of these terms. One ranked page = consistent inbound leads.</div>
+        <div class="c-tag">Cost: $0 to target, $300–900/mo for SEO service</div>
+      </div>
+      <div class="card">
+        <div class="c-icon">🏛️</div>
+        <div class="c-title">IANA Directory Listing</div>
+        <div class="c-body">Intermodal Association of North America maintains a carrier directory that freight brokers, 3PLs, and enterprise shippers actively use to source drayage partners. Getting listed puts Wide in front of buyers they would never reach through cold outreach alone.</div>
+        <div class="c-tag">Cost: ~$500–2,000 annual membership</div>
+      </div>
+      <div class="card">
+        <div class="c-icon">🌐</div>
+        <div class="c-title">Load Board Profiles</div>
+        <div class="c-body">Active profiles on DAT, Truckstop.com, and uShip's carrier directory. Some shippers search these platforms directly for vetted carriers. A complete profile with DOT number, insurance certificates, and service area listed generates passive inbound quote requests.</div>
+        <div class="c-tag">Cost: $35–150/mo depending on platform</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 11: VENDOR / SHIPPER ACQUISITION -->
+  <div class="slide">
+    <div class="eyebrow">Section 5 — Bringing in Vendors & Shippers</div>
+    <h2>How Wide Builds a <strong>Shipper Base</strong> That Stays</h2>
+    <div class="blist">
+      <div class="brow"><span class="bi">🤝</span><div class="bt"><b>3PL Partnerships — the single fastest path to volume.</b> Mid-size 3PLs (not Coyote, not Echo) need asset-based Chicago-area drayage carriers they can trust. One relationship with a 3PL can mean 15–30 loads per week on a predictable basis. Start with 5 targeted outreach calls to regional 3PLs.</div></div>
+      <div class="brow"><span class="bi">🚂</span><div class="bt"><b>Position at the rail ramps.</b> CSX Bedford Park, UP Global 4, BNSF Corwith — Wide should be a known name at these facilities. Introduce the team to the terminal managers. Other carriers who overflow loads refer to carriers they know by name. This is word-of-mouth at the rail level.</div></div>
+      <div class="brow"><span class="bi">🏭</span><div class="bt"><b>Target industrial importers in the Southland corridor.</b> The area around South Holland, Harvey, and Calumet City has a high density of warehouses and distribution centers that receive international containers regularly. These businesses need drayage weekly or daily. A local carrier with a clean safety record is their preference.</div></div>
+      <div class="brow"><span class="bi">📦</span><div class="bt"><b>Freight forwarder relationships.</b> Chicago has a strong freight forwarding community (NVOCCs, customs brokers). These firms dispatch drayage for their importer clients. One freight forwarder partnership can send 20–50 loads per month consistently. Target firms that specialize in the same commodity verticals Wide already serves.</div></div>
+      <div class="brow"><span class="bi">🎤</span><div class="bt"><b>Industry events and Illinois Trucking Association membership.</b> ITA hosts carrier events, shipper mixers, and regulatory seminars. Showing up and being known in the room converts to freight relationships. It's relationship-driven business development that compounds over time.</div></div>
+      <div class="brow"><span class="bi">📣</span><div class="bt"><b>LinkedIn presence for the company and leadership.</b> Enterprise shippers and 3PL procurement teams use LinkedIn to vet carriers before calling. A company page with fleet photos, load updates, and driver highlights builds credibility before the first conversation even happens.</div></div>
+    </div>
+  </div>
+
+  <!-- SLIDE 12: VENDOR ONBOARDING FUNNEL -->
+  <div class="slide">
+    <div class="eyebrow">Vendor Onboarding</div>
+    <h2>How to Turn a <strong>First Load Into a Long-Term Account</strong></h2>
+    <div class="flow">
+      <div class="fstep">
+        <div class="fn">Step 1</div>
+        <div class="ft">Discovery</div>
+        <div class="fb">Shipper finds Wide via Google, referral, or load board. Lands on a website that immediately builds trust.</div>
+        <div class="fc">Website does this for free</div>
+      </div>
+      <div class="farrow">→</div>
+      <div class="fstep">
+        <div class="fn">Step 2</div>
+        <div class="ft">Quote Request</div>
+        <div class="fb">Submits freight quote form on homepage. Auto-reply sent. Sales team responds within 2 hours.</div>
+        <div class="fc">Form built for $200–600</div>
+      </div>
+      <div class="farrow">→</div>
+      <div class="fstep">
+        <div class="fn">Step 3</div>
+        <div class="ft">Credit App</div>
+        <div class="fb">Shipper downloads credit application PDF, submits it. Net-30 terms established. Account is open.</div>
+        <div class="fc">PDF costs $50–200</div>
+      </div>
+      <div class="farrow">→</div>
+      <div class="fstep">
+        <div class="fn">Step 4</div>
+        <div class="ft">First Load</div>
+        <div class="fb">On-time delivery, proactive communication, zero surprises. First impression determines account lifetime.</div>
+        <div class="fc">Operations-dependent</div>
+      </div>
+      <div class="farrow">→</div>
+      <div class="fstep">
+        <div class="fn">Step 5</div>
+        <div class="ft">Portal Login</div>
+        <div class="fb">Shipper gets TMS login. Tracks loads daily. Ops team embedded into their workflow.</div>
+        <div class="fc">TMS: $1K–3K setup</div>
+      </div>
+      <div class="farrow">→</div>
+      <div class="fstep">
+        <div class="fn">Result</div>
+        <div class="ft">Sticky Account</div>
+        <div class="fb">Switching Wide out now requires an IT project. The account is locked in long-term.</div>
+        <div class="fc">This is the goal</div>
+      </div>
+    </div>
+    <div class="callout" style="margin-top:20px"><p>Every step in this funnel is either automated or systematized. <strong>The goal is to remove human friction from onboarding</strong> so the sales team spends time on relationships, not paperwork.</p></div>
+  </div>
+
+  <!-- SLIDE 13: DRIVER RECRUITMENT STRATEGY -->
+  <div class="slide">
+    <div class="eyebrow">Section 6 — Driver Growth</div>
+    <h2>How Wide Gets From <strong>~25 to 60+ Drivers</strong></h2>
+    <div class="g2">
+      <div class="card">
+        <div class="c-icon">📱</div>
+        <div class="c-title">Transparent Pay Page — The #1 Driver Magnet</div>
+        <div class="c-body">Whimsy lists pay details, benefit percentages, overtime thresholds, and hazmat premiums publicly. Drivers share this page with each other on Facebook groups and trucking forums. Wide should publish the same. If you won't post your pay, you lose to the company that will.</div>
+        <div class="c-tag">Cost: $0 — just write the page</div>
+      </div>
+      <div class="card">
+        <div class="c-icon">💸</div>
+        <div class="c-title">Driver Referral Program with a Dollar Amount</div>
+        <div class="c-body">Current drivers are your best recruiters. A $750–$1,500 referral bonus for every hired driver who stays 90 days creates a self-sustaining recruiting pipeline. The bonus needs to be listed on the website with the dollar amount visible — vague "referral incentives" get ignored.</div>
+        <div class="c-tag">Cost: $750–1,500 per successful hire</div>
+      </div>
+      <div class="card">
+        <div class="c-icon">🚫</div>
+        <div class="c-title">No-Forced-Dispatch Policy</div>
+        <div class="c-body">This is one of the most shared policy wins in intermodal trucking. Drivers who have been burned by forced dispatch at other carriers specifically seek out companies that advertise this policy. If Wide doesn't force dispatch, they need to say so on the website, boldly.</div>
+        <div class="c-tag">Cost: $0 — operational policy</div>
+      </div>
+      <div class="card">
+        <div class="c-icon">🏠</div>
+        <div class="c-title">Home Daily — The Intermodal Advantage</div>
+        <div class="c-body">Unlike OTR, intermodal drayage is local and regional. Wide's drivers are home every day. This is a massive quality-of-life advantage over OTR carriers that drivers with families actively seek. It should be on the homepage, not buried in the driver benefits page.</div>
+        <div class="c-tag">Cost: $0 — it's already true, just say it</div>
+      </div>
+    </div>
+    <div class="callout"><p>Reaching <strong>50+ drivers</strong> unlocks preferred carrier status with major shippers and 3PLs. At <strong>100+ drivers</strong>, Wide qualifies for Fortune 500 preferred carrier lists — that's where the big contract revenue lives.</p></div>
+  </div>
+
+  <!-- SLIDE 14: OWNER OPERATOR vs COMPANY DRIVER MIX -->
+  <div class="slide">
+    <div class="eyebrow">Fleet Structure Strategy</div>
+    <h2>Company Drivers vs. <strong>Owner Operators</strong> — Getting the Mix Right</h2>
+    <div class="compare">
+      <div class="compare-col">
+        <div class="ch">Company Drivers</div>
+        <div class="ct">Higher Cost, More Control</div>
+        <div class="cr"><span class="ci">✅</span> Full control over service quality and compliance</div>
+        <div class="cr"><span class="ci">✅</span> Benefits package builds loyalty and retention</div>
+        <div class="cr"><span class="ci">✅</span> Easier to scale training and safety standards</div>
+        <div class="cr"><span class="ci">✅</span> Required for some enterprise shipper contracts</div>
+        <div class="cr"><span class="ci">❌</span> Higher fixed cost — payroll, insurance, benefits</div>
+        <div class="cr"><span class="ci">❌</span> Slower to scale — hiring and onboarding takes time</div>
+        <div class="cr"><span class="ci">💡</span> Best for: Core fleet, dedicated lanes, brand-critical loads</div>
+      </div>
+      <div class="compare-divider">vs</div>
+      <div class="compare-col hot">
+        <div class="ch">Owner Operators</div>
+        <div class="ct">Lower Fixed Cost, Faster Scale</div>
+        <div class="cr"><span class="ci">✅</span> Lower fixed cost — pay per load, not per hour</div>
+        <div class="cr"><span class="ci">✅</span> Scale up and down with demand — no payroll risk</div>
+        <div class="cr"><span class="ci">✅</span> OOs often bring their own client relationships</div>
+        <div class="cr"><span class="ci">✅</span> Faster to add capacity during peak seasons</div>
+        <div class="cr"><span class="ci">❌</span> Less control over service consistency</div>
+        <div class="cr"><span class="ci">❌</span> Higher turnover if rates aren't competitive</div>
+        <div class="cr"><span class="ci">💡</span> Best for: Overflow volume, new markets, scaling fast</div>
+      </div>
+    </div>
+    <div class="callout"><p>Whimsy runs both programs simultaneously. <strong>The optimal split for a growing carrier at Wide's stage is roughly 60% company / 40% OO</strong> — stable core fleet with OO flexibility to chase volume without hiring risk.</p></div>
+  </div>
+
+  <!-- SLIDE 15: NICHE SPECIALIZATION -->
+  <div class="slide">
+    <div class="eyebrow">Section 7 — Niche Positioning</div>
+    <h2>Find Wide's <strong>Niche</strong> and Own It</h2>
+    <p class="sub">Whimsy's two niches — hazmat and tri-axle/overweight — command 20–35% rate premiums and attract shippers with almost no price sensitivity. Wide needs to pick one lane and go deep.</p>
+    <div class="g3">
+      <div class="card accent-border">
+        <div class="c-icon">☣️</div>
+        <div class="c-title">Option A: Hazmat Certification</div>
+        <div class="c-body">Get 10–15 drivers hazmat-certified. This unlocks chemical, industrial, and energy shipper contracts. Very few local drayage carriers can handle hazmat containers legally. Rate premiums are significant and shipper loyalty is extremely high — they don't switch once they find a reliable hazmat carrier.</div>
+        <div class="c-tag">Cost: ~$200–400 per driver for certification</div>
+      </div>
+      <div class="card">
+        <div class="c-icon">🏗️</div>
+        <div class="c-title">Option B: Overweight / Tri-Axle</div>
+        <div class="c-body">Lease or purchase tri-axle chassis. Overweight containers from ports and rail facilities need specialized equipment to move legally. The Chicago market has significant overweight container volume from steel, heavy equipment, and bulk commodity imports. Wide's South Holland location is ideally placed to serve this.</div>
+        <div class="c-tag">Cost: $800–1,200/mo per chassis</div>
+      </div>
+      <div class="card">
+        <div class="c-icon">❄️</div>
+        <div class="c-title">Option C: Temperature-Controlled</div>
+        <div class="c-body">Reefer container drayage from rail ramps to food distribution centers. Chicago is a major food import hub — Jewel-Osco, US Foods, Sysco, Gordon Food Service all receive refrigerated containers at Chicago ramps. A small reefer-capable fleet commands premium rates and builds long-term accounts with food distribution vendors.</div>
+        <div class="c-tag">Cost: Reefer units add ~$500–800/mo per truck in operating cost</div>
+      </div>
+    </div>
+    <div class="callout"><p>Pick <strong>one niche in the first 12 months</strong>. Market it on the website. Put it in the company description on FMCSA, IANA, and load board profiles. Build a reputation before adding the second niche.</p></div>
+  </div>
+
+  <!-- SLIDE 16: TECHNOLOGY STACK -->
+  <div class="slide">
+    <div class="eyebrow">Section 8 — Technology</div>
+    <h2>The <strong>Tech Stack</strong> That Supports Growth</h2>
+    <div class="g2">
+      <div class="card">
+        <div class="c-icon">🗺️</div>
+        <div class="c-title">Transportation Management System (TMS)</div>
+        <div class="c-body">Whimsy uses Trinium TMS (now CargoWise Landside). It powers their customer login portal, EDI integrations, load tracking, and invoicing. Wide should look at Rose Rocket, Turvo, or AxleHire — all are designed for mid-size drayage carriers with shipper portal functionality. A TMS is what separates a carrier from a trucking company in the eyes of enterprise shippers.</div>
+        <div class="c-tag">Cost: $500–2,000/mo depending on platform and fleet size</div>
+      </div>
+      <div class="card">
+        <div class="c-icon">📡</div>
+        <div class="c-title">EDI Integration</div>
+        <div class="c-body">Electronic Data Interchange lets a shipper's ERP or WMS system talk directly to Wide's TMS — sending load tenders, receiving status updates, and processing invoices automatically. Once a shipper is EDI-connected, they cannot switch carriers without a full IT project. This is the ultimate stickiness tool.</div>
+        <div class="c-tag">Cost: $1,500–5,000 per shipper integration setup</div>
+      </div>
+      <div class="card">
+        <div class="c-icon">📱</div>
+        <div class="c-title">ELD & Driver App</div>
+        <div class="c-body">Samsara is the industry standard. It handles ELD compliance, dash cam footage, GPS tracking, and can feed real-time location data into a shipper-facing tracking portal. Shippers increasingly require proof of ELD compliance and GPS tracking as part of carrier qualification. Samsara also reduces insurance premiums significantly over time.</div>
+        <div class="c-tag">Cost: ~$25–45/truck/mo for Samsara</div>
+      </div>
+      <div class="card">
+        <div class="c-icon">🤖</div>
+        <div class="c-title">Automated Load Confirmation & Invoicing</div>
+        <div class="c-body">Once a TMS is in place, load confirmations, detention clock triggers, accessorial charges, and invoices can all be automated. This removes 5–10 hours of admin work per week at the current fleet size — and scales without adding headcount as the fleet grows. Less manual work also means fewer billing errors and faster payment cycles.</div>
+        <div class="c-tag">Cost: Included in most TMS platforms</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 17: STICKY GROWTH FACTORS -->
+  <div class="slide">
+    <div class="eyebrow">Section 9 — What Makes Business Sticky</div>
+    <h2>Four <strong>Retention Drivers</strong> That Lock In Revenue</h2>
+    <div class="g2">
+      <div class="card accent-border">
+        <div class="c-icon">🔐</div>
+        <div class="c-title">1. TMS Customer Portal</div>
+        <div class="c-body">Once a shipper's logistics team logs into Wide's portal daily to check container status, pulling that workflow out and rebuilding it with a new carrier is a 60–90 day IT project nobody wants to do. The portal turns a business relationship into an operational dependency. Churn drops significantly after adoption — typically 60%+ reduction in account loss.</div>
+        <div class="c-tag">This is the highest-value investment Wide can make for retention</div>
+      </div>
+      <div class="card">
+        <div class="c-icon">🤝</div>
+        <div class="c-title">2. Dedicated Lane Contracts</div>
+        <div class="c-body">Spot loads are transactional — a shipper can use anyone on any given day. Dedicated lane contracts (even 90-day commitments) lock in volume, give drivers predictable schedules, and give Wide predictable revenue. The goal is to convert every repeat shipper from spot to dedicated within 6 months of their first load.</div>
+        <div class="c-tag">Preferred carrier status requires 50+ truck fleet</div>
+      </div>
+      <div class="card">
+        <div class="c-icon">🔗</div>
+        <div class="c-title">3. EDI / API Integration</div>
+        <div class="c-body">When Wide's TMS receives load tenders and sends status updates automatically through EDI, the shipper's procurement team stops thinking about drayage as something they need to manage. Wide becomes infrastructure. Switching means rebuilding that integration — which nobody does unless there's a major service failure.</div>
+        <div class="c-tag">Setup cost: $1,500–5,000 per shipper integration</div>
+      </div>
+      <div class="card">
+        <div class="c-icon">⭐</div>
+        <div class="c-title">4. FMCSA Safety Score</div>
+        <div class="c-body">Enterprise shippers and major 3PLs (C.H. Robinson, Echo, Coyote) run carrier safety audits before assigning loads. A clean CSA score is table stakes for these relationships. Whimsy's Carrier of the Year award from C.H. Robinson is directly connected to their safety record. Wide should treat their CSA score like a credit score — protect it at all costs.</div>
+        <div class="c-tag">A poor CSA score can disqualify Wide from entire shipper networks</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 18: DRIVER RETENTION FLYWHEEL -->
+  <div class="slide">
+    <div class="eyebrow">Section 10 — The Growth Flywheel</div>
+    <h2>How <strong>Driver Happiness</strong> Creates Shipper Revenue</h2>
+    <p class="sub">This is the engine Whimsy built over years. Every part feeds the next. Wide can build it faster by being intentional from day one.</p>
+    <div class="flow">
+      <div class="fstep">
+        <div class="fn">Step 1</div>
+        <div class="ft">Transparent Pay + Benefits</div>
+        <div class="fb">Great pay, no forced dispatch, home daily, hazmat premium — all visible on the website.</div>
+      </div>
+      <div class="farrow">→</div>
+      <div class="fstep">
+        <div class="fn">Step 2</div>
+        <div class="ft">Drivers Apply & Stay</div>
+        <div class="fb">Quality drivers join. Low turnover because the culture matches the promise. They refer others.</div>
+      </div>
+      <div class="farrow">→</div>
+      <div class="fstep">
+        <div class="fn">Step 3</div>
+        <div class="ft">Fleet Grows</div>
+        <div class="fb">More drivers = more capacity. Wide can accept larger shipper contracts and more volume.</div>
+      </div>
+      <div class="farrow">→</div>
+      <div class="fstep">
+        <div class="fn">Step 4</div>
+        <div class="ft">Better Service</div>
+        <div class="fb">Stable fleet means consistent on-time delivery. Safety scores stay clean. Shippers trust Wide.</div>
+      </div>
+      <div class="farrow">→</div>
+      <div class="fstep">
+        <div class="fn">Step 5</div>
+        <div class="ft">More Shipper Contracts</div>
+        <div class="fb">Trust leads to dedicated lane contracts, preferred carrier status, and 3PL partnerships.</div>
+      </div>
+      <div class="farrow">→</div>
+      <div class="fstep">
+        <div class="fn">Step 6</div>
+        <div class="ft">More Revenue</div>
+        <div class="fb">Higher volume = ability to pay drivers more, buy more equipment, attract better OOs.</div>
+      </div>
+    </div>
+    <div class="callout" style="margin-top:20px"><p>This flywheel is <strong>self-reinforcing once it starts</strong>. The challenge is starting it. The website, driver pay page, and referral program are the spark plugs.</p></div>
+  </div>
+
+  <!-- SLIDE 19: COST SUMMARY TABLE -->
+  <div class="slide">
+    <div class="eyebrow">Section 11 — Investment Summary</div>
+    <h2>Full <strong>Cost Breakdown</strong> to Match Whimsy's Position</h2>
+    <table class="wtable">
+      <tr>
+        <th>Initiative</th>
+        <th>Cost Range</th>
+        <th>Timeline</th>
+        <th>Expected Outcome</th>
+      </tr>
+      <tr><td>Website Redesign (full)</td><td>$2,000 – $6,000</td><td>4–8 weeks</td><td>Inbound leads from both drivers and shippers; looks professional to enterprise clients</td></tr>
+      <tr><td>Google Business Profile + Local SEO</td><td>$0 setup + $300–900/mo</td><td>1 week setup; 3–6 months to rank</td><td>Passive inbound shipper leads from South Holland / Southland corridor searches</td></tr>
+      <tr><td>Driver Recruiting Page + Online CDL App</td><td>$300 – $800</td><td>1–2 weeks</td><td>Higher quality driver applicants, faster pipeline, OOs can self-qualify</td></tr>
+      <tr><td>Freight Quote Form (homepage)</td><td>$200 – $600</td><td>1 week</td><td>Direct shipper leads, removes friction from first contact — highest conversion tool on the site</td></tr>
+      <tr><td>Credit Application PDF</td><td>$50 – $200</td><td>2–3 days</td><td>Signals professionalism, speeds up new account onboarding by days or weeks</td></tr>
+      <tr><td>IANA Membership + Directory Listing</td><td>$500 – $2,000/yr</td><td>2 weeks to activate</td><td>Listed in carrier directories used by enterprise shippers and 3PLs globally</td></tr>
+      <tr><td>TMS Platform (Rose Rocket / Turvo)</td><td>$500 – $2,000/mo</td><td>4–8 weeks to implement</td><td>Shipper portal, automated load confirmation, invoicing, EDI-ready foundation</td></tr>
+      <tr><td>Driver Referral Program</td><td>$750 – $1,500 per hire</td><td>Ongoing</td><td>Fleet grows through organic driver network — highest quality applicants</td></tr>
+      <tr><td>Hazmat Certification (10 drivers)</td><td>$2,000 – $4,000</td><td>30–60 days</td><td>Unlocks hazmat shipper segment, 20–35% rate premium on those loads</td></tr>
+      <tr><td>Samsara ELD + GPS (per truck)</td><td>$25 – $45/truck/mo</td><td>1–2 weeks rollout</td><td>Shipper tracking portal-ready, insurance premium reduction, CSA compliance</td></tr>
+    </table>
+  </div>
+
+  <!-- SLIDE 20: PHASED ROADMAP -->
+  <div class="slide">
+    <div class="eyebrow">Section 12 — Execution Timeline</div>
+    <h2>Wide's <strong>12-Month Roadmap</strong> to Match Whimsy</h2>
+    <div class="timeline">
+      <div class="trow">
+        <div class="tphase">Month 1–2</div>
+        <div class="tcontent">
+          <div class="tt">Foundation: Website + Digital Presence</div>
+          <div class="tb">Redesign website with dual navigation (drivers/shippers), add freight quote form on homepage, build driver recruiting page with transparent pay, set up Google Business Profile, create credit application PDF. Get the front door in order before everything else.</div>
+          <div class="tc">Investment: $3,000 – $8,000 one-time</div>
+        </div>
+      </div>
+      <div class="trow">
+        <div class="tphase">Month 2–4</div>
+        <div class="tcontent">
+          <div class="tt">Driver Growth: Referral Program + OO Outreach</div>
+          <div class="tb">Launch driver referral program with a published bonus amount. Post on trucking Facebook groups and CDL forums. Post on DAT, Truckstop, and Indeed. Target 5–10 new drivers (mix of company and OO) in 90 days to hit 35–40 total fleet. Start using fleet size in shipper conversations.</div>
+          <div class="tc">Investment: $750–1,500 per successful hire + $150/mo job posting costs</div>
+        </div>
+      </div>
+      <div class="trow">
+        <div class="tphase">Month 3–6</div>
+        <div class="tcontent">
+          <div class="tt">Shipper Base: 3PL Outreach + Rail Ramp Relationships</div>
+          <div class="tb">Identify 10 regional 3PLs and freight forwarders to target. Introduce Wide at CSX Bedford Park and UP Global 4 terminals. Join IANA directory. First dedicated lane contract goal: land 2–3 by month 6. These are the accounts that stabilize revenue and allow fleet planning.</div>
+          <div class="tc">Investment: IANA $500–2,000/yr + sales team time</div>
+        </div>
+      </div>
+      <div class="trow">
+        <div class="tphase">Month 5–8</div>
+        <div class="tcontent">
+          <div class="tt">Technology: TMS + Shipper Portal + Samsara</div>
+          <div class="tb">Implement TMS (Rose Rocket or Turvo). Roll out Samsara ELD fleet-wide if not already done. Build shipper-facing tracking portal. Offer existing shippers TMS login — this is when accounts become sticky. Begin EDI conversations with top 3 shipper accounts.</div>
+          <div class="tc">Investment: $500–2,000/mo TMS + $25–45/truck/mo ELD</div>
+        </div>
+      </div>
+      <div class="trow">
+        <div class="tphase">Month 8–12</div>
+        <div class="tcontent">
+          <div class="tt">Niche + Scale: Hazmat Certification or Overweight Fleet</div>
+          <div class="tb">Pick one niche — hazmat or overweight/tri-axle. Certify 8–12 drivers or lease tri-axle chassis. Market the niche on the website as a specialty service page. Target the shipper segment that needs this service. Goal by month 12: 50–60 drivers, 5+ dedicated shipper contracts, 2+ 3PL partnerships.</div>
+          <div class="tc">Investment: $2,000–4,000 hazmat training or $800–1,200/mo per tri-axle chassis</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 21: MILESTONES & METRICS -->
+  <div class="slide">
+    <div class="eyebrow">Measuring Progress</div>
+    <h2>The <strong>KPIs</strong> That Tell Wide If It's Working</h2>
+    <div class="g3">
+      <div class="card">
+        <div class="c-icon">🚛</div>
+        <div class="c-title">Driver Count</div>
+        <div class="c-body">Track total active drivers (company + OO) monthly. The progression that unlocks business: 35 drivers = higher shipper confidence. 50 drivers = preferred carrier eligibility. 75 drivers = Fortune 500 shortlist. 100+ drivers = dedicated contract negotiations open.</div>
+        <div class="c-tag">Target: 50+ drivers by month 12</div>
+      </div>
+      <div class="card">
+        <div class="c-icon">📊</div>
+        <div class="c-title">Driver Retention Rate</div>
+        <div class="c-body">Monthly turnover in trucking averages 90%+ annualized industry-wide. A company with strong culture and transparent pay should target under 40% annual turnover. Track every driver who leaves — understand why. Exit interview data is gold for fixing retention problems before they compound.</div>
+        <div class="c-tag">Target: Under 40% annual turnover</div>
+      </div>
+      <div class="card">
+        <div class="c-icon">📦</div>
+        <div class="c-title">Dedicated Lane Contracts</div>
+        <div class="c-body">Count the number of shippers on dedicated lane agreements vs. spot loads. The ratio matters more than total load count. A fleet with 80% dedicated volume is worth more, grows more predictably, and is far easier to manage operationally than a fleet chasing spot loads daily.</div>
+        <div class="c-tag">Target: 60% dedicated by month 12</div>
+      </div>
+      <div class="card">
+        <div class="c-icon">🌐</div>
+        <div class="c-title">Website Inbound Leads</div>
+        <div class="c-body">Track monthly quote form submissions and driver applications from the website. Google Analytics will show where traffic comes from. Google Search Console shows which keywords Wide is ranking for. A properly SEO'd site should be generating 5–15 shipper inquiries per month within 6 months of launch.</div>
+        <div class="c-tag">Target: 10+ inbound leads/month by month 6</div>
+      </div>
+      <div class="card">
+        <div class="c-icon">⭐</div>
+        <div class="c-title">FMCSA CSA Score</div>
+        <div class="c-body">Pull Wide's CSA score monthly at safer.fmcsa.dot.gov. The percentile scores across Safety Management, HOS Compliance, Vehicle Maintenance, and Driver Fitness determine whether enterprise shippers can even use Wide. Any score above 65th percentile in key categories triggers shipper disqualification at major 3PLs.</div>
+        <div class="c-tag">Target: All categories below 50th percentile</div>
+      </div>
+      <div class="card">
+        <div class="c-icon">💰</div>
+        <div class="c-title">Revenue Per Driver</div>
+        <div class="c-body">As the fleet grows, track gross revenue divided by total drivers monthly. This number should increase as Wide moves from spot to dedicated volume and adds premium-rate specialty services (hazmat, overweight). Declining revenue per driver signals rate pressure — a sign to find higher-value freight or renegotiate lane rates.</div>
+        <div class="c-tag">Target: Increase 15–20% YoY as niche develops</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 22: CLOSING -->
+  <div class="slide divider-slide">
+    <h1>The Blueprint<br>Is <strong>Right Here</strong></h1>
+    <p class="sub">Whimsy built what they have over years of intentional decisions — their website, their driver culture, their niche specialization, and their shipper tools all compound on each other. Wide Transport is in South Holland with a 300-mile service radius, close to some of the most active rail ramps in North America, and a clean slate to build this the right way from now.</p>
+    <div class="stats">
+      <div class="stat hot"><div class="stat-n">$16K</div><div class="stat-l">Max to match Whimsy's digital position</div></div>
+      <div class="stat"><div class="stat-n">12 mo</div><div class="stat-l">To reach 50+ drivers with focused effort</div></div>
+      <div class="stat"><div class="stat-n">1 contract</div><div class="stat-l">Pays back the entire website investment</div></div>
+    </div>
+    <div class="callout" style="margin-top:22px"><p><b>The first move is the website.</b> Everything else — driver recruiting, shipper onboarding, 3PL partnerships — is 10x harder when the front door doesn't match the quality of the operation behind it. Build the site first. Then let it work.</p></div>
+  </div>
+
+</div>
+
+<!-- DOTS -->
+<div class="dots" id="dots"></div>
+<div class="slide-num" id="slideNum">1 / 22</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const dotsContainer = document.getElementById('dots');
+  const slideNumEl = document.getElementById('slideNum');
+  let current = 0;
+  const total = slides.length;
+
+  slides.forEach((_, i) => {
+    const dot = document.createElement('div');
+    dot.className = 'dot' + (i === 0 ? ' active' : '');
+    dot.addEventListener('click', () => goTo(i));
+    dotsContainer.appendChild(dot);
+  });
+
+  function goTo(n) {
+    slides[current].classList.remove('active');
+    dotsContainer.children[current].classList.remove('active');
+    current = (n + total) % total;
+    slides[current].classList.add('active');
+    dotsContainer.children[current].classList.add('active');
+    slideNumEl.textContent = (current + 1) + ' / ' + total;
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); goTo(current + 1); }
+    if (e.key === 'ArrowLeft') { e.preventDefault(); goTo(current - 1); }
+    if (e.key === 'f' || e.key === 'F') {
+      if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(() => {});
+      else document.exitFullscreen();
+    }
+  });
+
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.dot')) goTo(current + 1);
+  });
+
+  document.addEventListener('dblclick', () => {
+    if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(() => {});
+    else document.exitFullscreen();
+  });
+
+  let cursorTimer;
+  document.addEventListener('mousemove', () => {
+    document.body.classList.add('cursor-visible');
+    clearTimeout(cursorTimer);
+    cursorTimer = setTimeout(() => document.body.classList.remove('cursor-visible'), 3000);
+  });
+</script>
+</body>
+</html>
